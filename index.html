@@ -3,144 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>看護研究サポートツール | おしえてかめさん</title>
-    
-    <link rel="apple-touch-icon" href="IMG_4333.png">
-    <link rel="icon" type="image/png" href="IMG_4333.png">
-    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>教えてカメさん｜看護師向け情報メディア</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="apple-touch-icon" href="IMG_4323.png">
+    <link rel="icon" type="image/png" href="IMG_4323.png">
 </head>
 <body>
 
-    <header>
+    <header class="app-header">
         <div class="header-container">
-            <a href="#" class="logo" onclick="showPage('home')">
-                <i class="fa-solid fa-turtle"></i>
-                <div class="brand-title">おしえてかめさん <span style="font-size: 0.9rem; color: #666;">看護研究部</span></div>
-            </a>
-            <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-link-btn">
-                <i class="fa-solid fa-house"></i> ブログ本編へ
-            </a>
+            <h1 class="brand-title">
+                <span class="icon-wrap">🐢</span> 教えてカメさん
+            </h1>
+            <p class="brand-subtitle">看護研究の「困った！」を解決しよう</p>
         </div>
     </header>
 
-    <main>
-        
-        <div id="page-home">
-            <div class="welcome-section">
-                <h2>看護研究の「困った！」を解決しよう</h2>
-                <p>新人看護師さんや、研究の進め方に悩む方のためのクイックナビツールです🐢</p>
-            </div>
+    <main class="app-container">
+        <nav class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('search-tab')">
+                <i class="fa-solid fa-magnifying-glass"></i><span>ワード検索</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('design-tab')">
+                <i class="fa-solid fa-compass"></i><span>デザイン選択</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('stats-tab')">
+                <i class="fa-solid fa-chart-simple"></i><span>統計ナビ</span>
+            </button>
+        </nav>
 
-            <div class="menu-grid">
-                <div class="menu-item" onclick="showPage('word')">
-                    <i class="fa-solid fa-book-medical"></i>
-                    <h3>ワード検索</h3>
-                    <p>研究用語の意味とブログ解説をすぐ検索</p>
-                </div>
-                <div class="menu-item" onclick="showPage('design')">
-                    <i class="fa-solid fa-compass"></i>
-                    <h3>研究デザインの選択</h3>
-                    <p>あなたの研究目的から最適な手法を導出</p>
-                </div>
-                <div class="menu-item" onclick="showPage('stats')">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    <h3>統計解析方法の選択</h3>
-                    <p>データの種類に合った統計手法をナビゲート</p>
-                </div>
-                <div class="menu-item" onclick="showPage('theme')">
-                    <i class="fa-solid fa-lightbulb"></i>
-                    <h3>研究テーマを考える</h3>
-                    <p>日常の疑問から研究テーマのカタチを提案</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="page-word" class="hidden card">
-            <button class="btn-back" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
-            <h2><i class="fa-solid fa-book-medical" style="color:var(--primary-color)"></i> 看護研究ワード検索</h2>
-            <p style="margin-bottom: 1rem; color: #666;">気になる看護研究のキーワードを入力、または選択してください。</p>
+        <section class="tab-content-wrapper">
             
-            <div class="search-box">
-                <input type="text" id="word-search-input" placeholder="例: PICO、概念枠組み、信頼性..." oninput="searchWord()">
-            </div>
-            
-            <div class="word-list">
-                <span class="word-tag" onclick="fillAndSearch('PICO')">PICO / PECO</span>
-                <span class="word-tag" onclick="fillAndSearch('質的研究')">質的研究</span>
-                <span class="word-tag" onclick="fillAndSearch('量的研究')">量的研究</span>
-                <span class="word-tag" onclick="fillAndSearch('インフォームドコンセント')">倫理的配慮</span>
-                <span class="word-tag" onclick="fillAndSearch('バイアス')">バイアス</span>
-            </div>
-
-            <div id="word-result" class="result-box hidden"></div>
-        </div>
-
-        <div id="page-design" class="hidden card">
-            <button class="btn-back" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
-            <h2><i class="fa-solid fa-compass" style="color:var(--primary-color)"></i> 研究デザインの選択</h2>
-            <p style="margin-bottom: 1.5rem; color: #666;">あなたのやりたい研究の目的に最も近いものを選択してください。</p>
-
-            <div class="form-group">
-                <label>Q1. 一番明らかにしたいことは何ですか？</label>
-                <select id="design-q1">
-                    <option value="quality">対象者の思いや、ケアのプロセスを深く言葉で表したい</option>
-                    <option value="quantity_describe">現状の実態（パーセンテージや平均値）を数値で明らかにしたい</option>
-                    <option value="quantity_compare">新しい看護ケアや研修の効果を前後で比較したい</option>
-                </select>
+            <div id="search-tab" class="tab-pane active">
+                <div class="search-box-area">
+                    <div class="search-input-wrap">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" placeholder="例: PICO、質的研究、倫理的配慮..." oninput="searchWord()">
+                    </div>
+                    <div class="suggest-tags">
+                        <span class="tag" onclick="quickSearch('PICO')">PICO</span>
+                        <span class="tag" onclick="quickSearch('質的研究')">質的研究</span>
+                        <span class="tag" onclick="quickSearch('概念枠組み')">概念枠組み</span>
+                        <span class="tag" onclick="quickSearch('文献検討')">文献検討</span>
+                    </div>
+                </div>
+                <div id="search-results" class="results-container">
+                    <p class="placeholder-text">キーワードを入力するか、タグをタップしてください。</p>
+                </div>
             </div>
 
-            <button class="btn-submit" onclick="diagnoseDesign()">おすすめのデザインを診断する</button>
-
-            <div id="design-result" class="result-box hidden"></div>
-        </div>
-
-        <div id="page-stats" class="hidden card">
-            <button class="btn-back" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
-            <h2><i class="fa-solid fa-chart-simple" style="color:var(--primary-color)"></i> 統計解析方法の選択</h2>
-            <p style="margin-bottom: 1.5rem; color: #666;">集めたデータをどう比較・分析したいか選んでみましょう。</p>
-
-            <div class="form-group">
-                <label>Q1. データの種類（尺度）はどちらですか？</label>
-                <select id="stats-q1">
-                    <option value="continuous">点数や測定値（年齢、血圧、テストの点数など平均が出せるもの）</option>
-                    <option value="categorical">カテゴリー（はい/いいえ、性別、転倒の有無など人数を数えるもの）</option>
-                </select>
+            <div id="design-tab" class="tab-pane">
+                <h3 class="pane-title">研究デザインの選択</h3>
+                <p class="pane-intro">あなたの研究目的から最適な方法の選択をサポートします。一番近いものを選択してください。</p>
+                <div class="choice-grid">
+                    <button class="choice-card" onclick="selectDesign('quality')">
+                        <i class="fa-solid fa-comments"></i>
+                        <span>対象者の「思い」や「経験」を深く言葉で表したい</span>
+                    </button>
+                    <button class="choice-card" onclick="selectDesign('quantity-desc')">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>実態や現状（パーセンテージや平均）を明らかにしたい</span>
+                    </button>
+                    <button class="choice-card" onclick="selectDesign('quantity-ana')">
+                        <i class="fa-solid fa-code-compare"></i>
+                        <span>新しいケアや研修の効果を前後で比較して証明したい</span>
+                    </button>
+                </div>
+                <div id="design-result" class="result-box hidden"></div>
             </div>
 
-            <div class="form-group">
-                <label>Q2. どのように比較・分析したいですか？</label>
-                <select id="stats-q2">
-                    <option value="two_groups">2つのグループを比較したい（例：A病棟とB病棟、介入前後）</option>
-                    <option value="relation">2つの項目の関係性・関連を見たい（例：経験年数と離職傾向）</option>
-                </select>
+            <div id="stats-tab" class="tab-pane">
+                <h3 class="pane-title">統計解析方法の選択</h3>
+                <p class="pane-intro">データの種類や研究デザインに合った統計手法の選択をサポートします。扱いたいデータの性質を選んでみましょう。</p>
+                <div class="question-box" id="stats-q1">
+                    <p class="question-text">Q1. 比較したいデータ（変数）の種類はどちらですか？</p>
+                    <div class="choice-grid">
+                        <button class="choice-card" onclick="nextStatsStep(2, 'category')">
+                            <i class="fa-solid fa-tags"></i>
+                            <strong>カテゴリーデータ</strong>
+                            <span>血液型、有無、はい/いいえ、職位など</span>
+                        </button>
+                        <button class="choice-card" onclick="nextStatsStep(2, 'continuous')">
+                            <i class="fa-solid fa-arrow-up-9-1"></i>
+                            <strong>連続変数（数値）</strong>
+                            <span>年齢、点数、時間、血圧など</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="question-box hidden" id="stats-q2-continuous">
+                    <p class="question-text">Q2. 比較する「グループ（群）」の数はいくつですか？</p>
+                    <div class="choice-grid">
+                        <button class="choice-card" onclick="showStatsResult('t-test')">
+                            <i class="fa-solid fa-user-group"></i>
+                            <strong>2つのグループを比較</strong>
+                            <span>研修の前後、A病棟とB病棟の比較など</span>
+                        </button>
+                        <button class="choice-card" onclick="showStatsResult('anova')">
+                            <i class="fa-solid fa-users"></i>
+                            <strong>3つ以上のグループを比較</strong>
+                            <span>1年目・2年目・3年目の比較など</span>
+                        </button>
+                    </div>
+                    <button class="back-btn" onclick="backStatsStep(1)"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
+                </div>
+                <div id="stats-result" class="result-box hidden"></div>
             </div>
 
-            <button class="btn-submit" onclick="diagnoseStats()">適切な統計解析を調べる</button>
-
-            <div id="stats-result" class="result-box hidden"></div>
-        </div>
-
-        <div id="page-theme" class="hidden card">
-            <button class="btn-back" onclick="showPage('home')"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
-            <h2><i class="fa-solid fa-lightbulb" style="color:var(--primary-color)"></i> 研究テーマを考える</h2>
-            <p style="margin-bottom: 1.5rem; color: #666;">あなたが日頃、病棟やケアの中で「もっとこうなればいいのに」「なぜこうなんだろう？」と思うことを自由に入力してください。</p>
-
-            <div class="form-group">
-                <label>あなたの気づき・困りごと（例：新人看護師の夜勤前の不安が強そう）</label>
-                <textarea id="theme-input" rows="4" placeholder="例：経管栄養のインシデントが減らない、退院指導がうまく患者さんに伝わっていない気がする..."></textarea>
-            </div>
-
-            <button class="btn-submit" onclick="generateTheme()">研究テーマの候補を作る</button>
-
-            <div id="theme-result" class="result-box hidden"></div>
-        </div>
-
+        </section>
     </main>
 
-    <footer>
-        <p>© 2026 おしえてかめさん Webアプリ版. All Rights Reserved.</p>
+    <footer class="app-footer">
+        <p>&copy; 2026 教えてカメさん｜看護師向け情報メディア. All Rights Reserved.</p>
     </footer>
 
     <script src="script.js"></script>
