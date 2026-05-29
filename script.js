@@ -1,165 +1,172 @@
-// ページ遷移システム
-function showPage(pageId) {
-    const pages = ['home', 'word', 'design', 'stats', 'theme'];
-    pages.forEach(p => {
-        document.getElementById(`page-${p}`).classList.add('hidden');
-    });
-    document.getElementById(`page-${pageId}`).classList.remove('hidden');
-    window.scrollTo(0, 0);
+// --- 1. タブ切り替えロジック ---
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    document.getElementById(tabId).classList.add('active');
+    // ボタンのアクティブ化
+    const eventBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+    if (eventBtn) eventBtn.classList.add('active');
 }
 
-// --- 1. ワード検索データ＆ロジック ---
+// --- 2. ワード検索データベース & ロジック ---
 const wordDatabase = [
     {
-        keywords: ['pico', 'peco', 'ピコ'],
+        keywords: ['pico', 'peco', 'ピコ', 'ペコ', '研究疑問'],
         title: 'PICO / PECO（研究疑問の定式化）',
-        desc: '研究の問いを明確にするためのフレームワークです。P:患者、I:介入、C:比較、O:結果を整理することで、ブレない研究計画が立てられます。',
-        url: 'https://kamesan-kamesan.com/'
+        desc: '臨床の疑問を研究の問いに落とし込むフレームワーク。P(対象)、I/E(介入・要因)、C(比較)、O(結果)に整理してブレない計画を作ります。'
     },
     {
-        keywords: ['質的研究', 'しつてき'],
-        title: '質的研究（質的記述的アプローチなど）',
-        desc: '数字では表せない「患者さんの思い」や「看護師の経験・プロセス」を言葉（インタビューなど）を通して深く探求する研究デザインです。',
-        url: 'https://kamesan-kamesan.com/'
+        keywords: ['質的研究', 'しつてき', 'インタビュー', '質的記述'],
+        title: '質的研究（質的記述的アプローチ）',
+        desc: '数字では表せない「患者さんの思い」や「看護師の経験・葛藤」を、インタビュー等の言葉を通じて深く探求するデザインです。'
     },
     {
-        keywords: ['量的研究', 'りょうてき'],
-        title: '量的研究（統計・アンケート）',
-        desc: '仮説を数値データや統計解析を用いて客観的に証明する研究です。実態調査や、介入の効果判定などに広く使われます。',
-        url: 'https://kamesan-kamesan.com/'
+        keywords: ['量的研究', 'りょうてき', '統計', 'アンケート', '数値'],
+        title: '量的研究（実態調査・実験研究）',
+        desc: '仮説を数値データや統計解析を用いて客観的に証明する研究。実態を追う記述研究や、効果を測る分析研究などがあります。'
     },
     {
-        keywords: ['倫理', 'インフォームドコンセント', '同意'],
+        keywords: ['概念枠組み', 'がいねんわくぐみ', 'フレームワーク'],
+        title: '概念枠組み（研究の全体像）',
+        desc: '「研究がどのような理論や視点に基づいているか」を図や文章で示したもの。先行研究レビューを基に因果関係を整理する土台です。'
+    },
+    {
+        keywords: ['倫理的配慮', 'りんり', '同意書', '個人情報'],
         title: '研究における倫理的配慮',
-        desc: '対象者の不利益にならないよう、自由意思による同意、個人情報の保護、研究目的以外の不使用などを計画書に明記し、倫理委員会の承認を得る必要があります。',
-        url: 'https://kamesan-kamesan.com/'
+        desc: '対象者に不利益を与えないための絶対条件。自由意思による参加・撤回、匿名化などを明記し、倫理委員会の承認を得ます。'
     },
     {
-        keywords: ['バイアス', '偏り'],
-        title: 'バイアス（結果の偏り）',
-        desc: '研究結果を歪めてしまう原因のことです。サンプルの偏りや、質問の仕方の偏りなどがあり、これらをできるだけ排除する工夫が必要です。',
-        url: 'https://kamesan-kamesan.com/'
+        keywords: ['文献検討', 'ぶんけんけんとう', '先行研究', '医中誌'],
+        title: '文献検討（先行研究の吟味）',
+        desc: '医中誌等で過去の類似研究を調べる作業。「どこまでが明らかで、何が未解明か(研究の新規性)」を絞り込むために不可欠です。'
+    },
+    {
+        keywords: ['考察', 'こうさつ', '結果の解釈'],
+        title: '論文の「考察」の書き方',
+        desc: '結果から何が言えるかを先行研究と比較しながら論理的に紐解く最重要パート。単なる感想にせず、看護実践への示唆を述べます。'
     }
 ];
 
 function searchWord() {
-    const input = document.getElementById('word-search-input').value.toLowerCase().trim();
-    const resultBox = document.getElementById('word-result');
+    const input = document.getElementById('search-input').value.toLowerCase().trim();
+    const resultsContainer = document.getElementById('search-results');
     
-    if (input === "") {
-        resultBox.classList.add('hidden');
+    if (!input) {
+        resultsContainer.innerHTML = '<p class="placeholder-text">キーワードを入力するか、タグをタップしてください。</p>';
         return;
     }
 
-    const hit = wordDatabase.find(w => w.keywords.some(k => k.includes(input) || input.includes(k)));
+    const filtered = wordDatabase.filter(item => 
+        item.title.toLowerCase().includes(input) || 
+        item.desc.toLowerCase().includes(input) ||
+        item.keywords.some(kw => kw.includes(input))
+    );
 
-    if (hit) {
-        resultBox.innerHTML = `
-            <h4>🐢 発見！【${hit.title}】</h4>
-            <p>${hit.desc}</p>
-            <a href="${hit.url}" target="_blank" class="blog-ref"><i class="fa-solid fa-arrow-up-right-from-square"></i> 「おしえてかめさん」の解説記事でもっと学ぶ</a>
-        `;
-        resultBox.classList.remove('hidden');
-    } else {
-        resultBox.innerHTML = `
-            <h4>🐢 ごめんなさい</h4>
-            <p>該当するワードがまだ登録されていません。「おしえてかめさん」のブログサイト内検索も試してみてくださいね。</p>
-            <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-ref"><i class="fa-solid fa-magnifying-glass"></i> ブログで直接検索する</a>
-        `;
-        resultBox.classList.remove('hidden');
+    if (filtered.length === 0) {
+        resultsContainer.innerHTML = '<p class="placeholder-text">該当するワードが見つかりませんでした。別のキーワードを試してみてください。</p>';
+        return;
     }
+
+    resultsContainer.innerHTML = filtered.map(item => `
+        <div class="word-card">
+            <h4><i class="fa-solid fa-book-bookmark"></i> ${item.title}</h4>
+            <p>${item.desc}</p>
+            <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-link">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> ブログで詳しい解説を見る
+            </a>
+        </div>
+    `).join('');
 }
 
-function fillAndSearch(word) {
-    document.getElementById('word-search-input').value = word;
+function quickSearch(word) {
+    document.getElementById('search-input').value = word;
     searchWord();
 }
 
-// --- 2. 研究デザイン診断 ---
-function diagnoseDesign() {
-    const q1 = document.getElementById('design-q1').value;
+// --- 3. 研究デザイン選択ナビ（文言調整版） ---
+function selectDesign(type) {
     const resultBox = document.getElementById('design-result');
-    let title = "", desc = "";
-
-    if (q1 === 'quality') {
-        title = '質的記述的研究デザイン';
-        desc = '対象者の生の語りや体験を丁寧にコード化し、カテゴリーに分類していく方法がおすすめです。新人看護師の心の葛藤や、特定の患者さんの闘病意欲などを捉えるのに最適です。';
-    } else if (q1 === 'quantity_describe') {
-        title = '量的・横断的記述研究（実態調査）',
-        desc = 'アンケート（質問紙調査）を用いて、「〇〇を行っている看護師の割合」や「患者の満足度平均値」などを明らかにするデザインがおすすめです。';
-    } else {
-        title = '準実験研究（前後比較デザイン）';
-        desc = '新しい看護ケアや指導パンフレットを導入する「前」と「後」で、患者さんの指標（知識量やインシデント数など）がどう変化したかを評価するデザインがおすすめです。';
-    }
-
-    resultBox.innerHTML = `
-        <h4>🐢 おすすめのデザイン: ${title}</h4>
-        <p>${desc}</p>
-        <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-ref"><i class="fa-solid fa-newspaper"></i> このデザインの計画書の書き方をブログで見る</a>
-    `;
     resultBox.classList.remove('hidden');
-}
-
-// --- 3. 統計解析診断 ---
-function diagnoseStats() {
-    const q1 = document.getElementById('stats-q1').value;
-    const q2 = document.getElementById('stats-q2').value;
-    const resultBox = document.getElementById('stats-result');
-    let title = "", desc = "";
-
-    if (q1 === 'continuous' && q2 === 'two_groups') {
-        title = 't検定 (t-test)';
-        desc = '2つのグループの平均値に差があるかどうかを検証する、看護研究で最もよく使われる統計手法です（例：研修前後のテストの平均点比較）。';
-    } else if (q1 === 'categorical' && q2 === 'two_groups') {
-        title = 'カイ二乗検定 (χ²検定)';
-        desc = '2つのグループにおける「割合や人数」に偏り・差があるかを検証します（例：A病棟とB病棟での転倒発生率の比較）。';
-    } else if (q1 === 'continuous' && q2 === 'relation') {
-        title = 'ピアソンの相関係数 / スピアマンの順位相関係数';
-        desc = '2つの連続するデータ（例：自尊感情のスコアと燃え尽き症候群のスコア）の間に、正または負の関連性があるかを調べる手法です。';
-    } else {
-        title = 'クロス集計・ロジスティック回帰分析など';
-        desc = 'カテゴリー同士の関連性を見る場合はクロス集計やカイ二乗検定、何が原因でそのイベント（転倒など）が起きたかの因果関係を探るには多変量解析が視野に入ります。';
-    }
-
-    resultBox.innerHTML = `
-        <h4>🐢 おすすめの統計手法: ${title}</h4>
-        <p>${desc}</p>
-        <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-ref"><i class="fa-solid fa-calculator"></i> 統計アレルギーでもわかる解説記事へ</a>
-    `;
-    resultBox.classList.remove('hidden');
-}
-
-// --- 4. 研究テーマ生成（擬似AIロジック） ---
-function generateTheme() {
-    const input = document.getElementById('theme-input').value.trim();
-    const resultBox = document.getElementById('theme-result');
-
-    if (!input) {
-        alert('困りごとや気づきを入力してくださいね🐢');
-        return;
-    }
-
-    // キーワードを少し抽出して研究テーマ風に変換する簡易ロジック
-    const sampleKeywords = ['夜勤', 'インシデント', '指導', '不安', '患者', '看護師', 'ストレス'];
-    let foundKeyword = "ケアの実施";
     
-    for (let kw of sampleKeywords) {
-        if (input.includes(kw)) {
-            foundKeyword = kw;
-            break;
+    let html = '';
+    if (type === 'quality') {
+        html = `
+            <div class="result-title"><i class="fa-solid fa-square-poll-horizontal"></i> 選択サポート結果：質的研究（質的記述的アプローチ）</div>
+            <p>個別のケースや、数字にできない主観的なプロセスを深く掘り下げるのに向いています。あなたの研究目的を達成するために、まずはインタビューガイドの作成や倫理的配慮の検討を始めましょう。</p>
+        `;
+    } else if (type === 'quantity-desc') {
+        html = `
+            <div class="result-title"><i class="fa-solid fa-chart-pie"></i> 選択サポート結果：量的記述研究（実態調査）</div>
+            <p>現状の傾向や、何％の人が困っているか等の分布を明確にするデザインです。目的に適合した信頼できる「尺度(アンケート用紙)」が過去にあるか検索してみましょう。</p>
+        `;
+    } else if (type === 'quantity-ana') {
+        html = `
+            <div class="result-title"><i class="fa-solid fa-flask"></i> 選択サポート結果：準実験研究（前後比較デザインなど）</div>
+            <p>研修や新しい看護ケアの導入前後に同じアンケートや測定を行い、その「効果」を統計的に検証するアプローチです。目的を客観的な数値で証明するのに最適です。</p>
+        `;
+    }
+    
+    html += `
+        <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-link">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> このデザインのロードマップをブログで確認
+        </a>
+    `;
+    resultBox.innerHTML = html;
+}
+
+// --- 4. 統計ナビロジック（文言調整版） ---
+let statsSelections = {};
+
+function nextStatsStep(step, val) {
+    if (step === 2) {
+        statsSelections.type = val;
+        document.getElementById('stats-q1').classList.add('hidden');
+        
+        if (val === 'category') {
+            showStatsResult('chi-square');
+        } else {
+            document.getElementById('stats-q2-continuous').classList.remove('hidden');
         }
     }
+}
 
-    resultBox.innerHTML = `
-        <h4>🐢 看護研究テーマの提案・変換案</h4>
-        <p>あなたが挙げた課題から、以下のような研究テーマ（問い）の骨子はいかがでしょうか？</p>
-        <ul style="margin: 1rem 0 1rem 1.5rem; text-align: left;">
-            <li><strong>量的アプローチ：</strong>「病棟における${foundKeyword}に関連する要因の実態調査」</li>
-            <li><strong>質的アプローチ：</strong>「中堅看護師が経験する${foundKeyword}における葛藤とそのプロセス」</li>
-            <li><strong>実践・介入：</strong>「新しい指導モデルの導入が${foundKeyword}に与える効果の検証」</li>
-        </ul>
-        <p style="font-size:0.9rem; color:#666;">これらをベースに、PICO（誰に、何を、どう比較するか）を組み合わせてみましょう！</p>
-        <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-ref"><i class="fa-solid fa-pen-to-square"></i> テーマ決定から計画書作成までのロードマップはこちら</a>
-    `;
+function backStatsStep(step) {
+    if (step === 1) {
+        document.getElementById('stats-q2-continuous').classList.add('hidden');
+        document.getElementById('stats-result').classList.add('hidden');
+        document.getElementById('stats-q1').classList.remove('hidden');
+    }
+}
+
+function showStatsResult(method) {
+    document.getElementById('stats-q2-continuous').classList.add('hidden');
+    const resultBox = document.getElementById('stats-result');
     resultBox.classList.remove('hidden');
+    
+    let html = '';
+    if (method === 'chi-square') {
+        html = `
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 選択サポート結果：カイ二乗検定</div>
+            <p>「性別によって希望する研修に差があるか」など、カテゴリー同士の関連・比率の差を調べたい場合に最もよく使われる、デザインに適合した王道の統計手法です。</p>
+        `;
+    } else if (method === 't-test') {
+        html = `
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 選択サポート結果：t検定</div>
+            <p>「研修前後のテストの点数の比較（対応あり）」や「A病棟とB病棟の平均年齢の比較（対応なし）」など、データの種類（連続変数）と2群比較のデザインに合った統計手法です。</p>
+        `;
+    } else if (method === 'anova') {
+        html = `
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 選択サポート結果：分散分析（ANOVA）</div>
+            <p>3つ以上のグループの平均値に差があるかを調べます。研究デザインに合わせて、有意差が出た場合はどこに差があるかを特定する「多重比較」をセットで行います。</p>
+        `;
+    }
+    
+    html += `
+        <button class="back-btn" style="margin-top:12px; display:block;" onclick="backStatsStep(1)"><i class="fa-solid fa-rotate-left"></i> 最初からやり直す</button>
+        <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-link">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> EZRでの具体的な解析手順をブログで学ぶ
+        </a>
+    `;
+    resultBox.innerHTML = html;
 }
