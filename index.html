@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>教えてカメさん｜看護師向け情報メディア</title>
+    <title>教えてカメさん｜検索ツール</title>
+    <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <!-- PWA用ホーム画面アイコン指定 -->
     <link rel="apple-touch-icon" href="IMG_4323.png">
     <link rel="icon" type="image/png" href="IMG_4323.png">
 </head>
@@ -20,10 +22,17 @@
                 <span class="icon-wrap">🐢</span> 教えてカメさん
             </h1>
             <p class="brand-subtitle">看護研究の「困った！」を解決しよう</p>
+            <!-- 💡 追加：ブログ誘導ボタン -->
+            <div class="header-action">
+                <a href="https://kamesan-kamesan.com/" target="_blank" class="btn-primary-outline">
+                    <i class="fa-solid fa-house"></i> ブログ「教えてカメさん」はこちら
+                </a>
+            </div>
         </div>
     </header>
 
     <main class="app-container">
+        <!-- タブメニュー -->
         <nav class="tab-navigation">
             <button class="tab-btn active" onclick="switchTab('search-tab')">
                 <i class="fa-solid fa-magnifying-glass"></i><span>ワード検索</span>
@@ -36,8 +45,10 @@
             </button>
         </nav>
 
+        <!-- コンテンツエリア -->
         <section class="tab-content-wrapper">
             
+            <!-- 1. ワード検索タブ -->
             <div id="search-tab" class="tab-pane active">
                 <div class="search-box-area">
                     <div class="search-input-wrap">
@@ -56,6 +67,7 @@
                 </div>
             </div>
 
+            <!-- 2. デザイン選択タブ -->
             <div id="design-tab" class="tab-pane">
                 <h3 class="pane-title">研究デザインの選択</h3>
                 <p class="pane-intro">あなたの研究目的から最適な方法の選択をサポートします。一番近いものを選択してください。</p>
@@ -68,14 +80,23 @@
                         <i class="fa-solid fa-list-check"></i>
                         <span>実態や現状（パーセンテージや平均）を明らかにしたい</span>
                     </button>
+                    <button class="choice-card" onclick="selectDesign('quantity-rel')">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>2つの要素（例：夜勤回数とミス、経験年数と離職意向）の関係性を調べたい</span>
+                    </button>
                     <button class="choice-card" onclick="selectDesign('quantity-ana')">
                         <i class="fa-solid fa-code-compare"></i>
                         <span>新しいケアや研修の効果を前後で比較して証明したい</span>
+                    </button>
+                    <button class="choice-card" onclick="selectDesign('mixed')">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>アンケートで実態（数字）を掴み、さらに理由をインタビュー（言葉）で深掘りしたい</span>
                     </button>
                 </div>
                 <div id="design-result" class="result-box hidden"></div>
             </div>
 
+            <!-- 3. 統計ナビタブ -->
             <div id="stats-tab" class="tab-pane">
                 <h3 class="pane-title">統計解析方法の選択</h3>
                 <p class="pane-intro">データの種類や研究デザインに合った統計手法の選択をサポートします。扱いたいデータの性質を選んでみましょう。</p>
@@ -117,7 +138,7 @@
     </main>
 
     <footer class="app-footer">
-        <p>&copy; 2026 教えてカメさん｜看護師向け情報メディア. All Rights Reserved.</p>
+        <p>&copy; 2026 教えてカメさん｜検索ツール. All Rights Reserved.</p>
     </footer>
 
     <script src="script.js"></script>
