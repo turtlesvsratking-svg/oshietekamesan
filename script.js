@@ -83,7 +83,7 @@ function quickSearch(word) {
     searchWord();
 }
 
-// --- 3. 研究デザイン選択ナビ（💡 5つの選択肢・「最適デザイン:」への変更版） ---
+// --- 3. 研究デザイン選択ナビ（💡 新デザイン「実験研究」の追加と「最適デザイン:」への統一） ---
 function selectDesign(type) {
     const resultBox = document.getElementById('design-result');
     resultBox.classList.remove('hidden');
@@ -100,18 +100,22 @@ function selectDesign(type) {
             <p>現状の傾向や、何％の人が困っているか等の分布を横断的に調査して浮き彫りにするデザインです。信頼できる「既存の尺度(アンケート用紙)」が過去にあるか検索してみましょう。</p>
         `;
     } else if (type === 'quantity-rel') {
-        // 💡 追加デザインの結果表示
         html = `
             <div class="result-title"><i class="fa-solid fa-chart-line"></i> 最適デザイン：量的相関研究（相関分析・要因分析）</div>
             <p>2つ以上の要素が「一方が上がればもう一方も変化するか（相関）」や「原因と結果（因果）の傾向にあるか」をアンケートの数値データ等から分析する、看護研究で非常にメジャーなデザインです。</p>
         `;
+    } else if (type === 'quantity-exp') {
+        // 💡 追加：実験研究の結果表示
+        html = `
+            <div class="result-title"><i class="fa-solid fa-flask-vial"></i> 最適デザイン：実験研究（ランダム化比較試験：RCT / 非ランダム化比較試験）</div>
+            <p>対象者をランダムに2群以上に割り振り、一方には新しいケアや治療を行い、もう一方には従来のケアを行うことで、外部要因を極限まで排除して効果を厳密に検証・証明する最もエビデンスレベルの高い量的研究デザインです。</p>
+        `;
     } else if (type === 'quantity-ana') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-flask"></i> 最適デザイン：準実験研究（前後比較デザイン）</div>
-            <p>研修の実施や新しいケア手法の導入前後に、同じ評価（テストや指標）を行い、その介入効果を統計的に検証するアプローチです。</p>
+            <div class="result-title"><i class="fa-solid fa-code-compare"></i> 最適デザイン：準実験研究（前後比較デザインなど）</div>
+            <p>研修の実施や新しい看護ケアの導入前後に、同じ評価（テストや指標）を行い、その介入効果を統計的に検証するアプローチです。</p>
         `;
     } else if (type === 'mixed') {
-        // 💡 追加デザインの結果表示
         html = `
             <div class="result-title"><i class="fa-solid fa-layer-group"></i> 最適デザイン：混合研究法（Mixed Methods）</div>
             <p>数値による客観的な実態データ（量的データ）と、当事者の生の語り（質的データ）を組み合わせることで、研究の厚みと臨床への説得力を一気に高める先進的なアプローチです。</p>
@@ -126,57 +130,103 @@ function selectDesign(type) {
     resultBox.innerHTML = html;
 }
 
-// --- 4. 統計ナビロジック ---
+// --- 4. 統計ナビロジック（💡 多変量解析を網羅した動的3ステップ構造） ---
 let statsSelections = {};
 
 function nextStatsStep(step, val) {
+    // 全て非表示にしてから進む
     if (step === 2) {
-        statsSelections.type = val;
+        statsSelections.dataType = val; // 'category' or 'continuous'
         document.getElementById('stats-q1').classList.add('hidden');
+        document.getElementById('stats-q2').classList.remove('hidden');
+    } else if (step === 3) {
+        statsSelections.purpose = val; // 'compare' (差) or 'relation' (関連・要因)
+        document.getElementById('stats-q2').classList.add('hidden');
         
-        if (val === 'category') {
-            showStatsResult('chi-square');
-        } else {
-            document.getElementById('stats-q2-continuous').classList.remove('hidden');
+        if (val === 'compare') {
+            document.getElementById('stats-q3-compare').classList.remove('hidden');
+        } else if (val === 'relation') {
+            document.getElementById('stats-q3-relation').classList.remove('hidden');
         }
     }
 }
 
-function backStatsStep(step) {
-    if (step === 1) {
-        document.getElementById('stats-q2-continuous').classList.add('hidden');
-        document.getElementById('stats-result').classList.add('hidden');
+function backStatsStep(currentStep) {
+    // 戻るボタンの制御
+    document.getElementById('stats-result').classList.add('hidden');
+    if (currentStep === 1) {
+        document.getElementById('stats-q2').classList.add('hidden');
         document.getElementById('stats-q1').classList.remove('hidden');
+    } else if (currentStep === 2) {
+        document.getElementById('stats-q3-compare').classList.add('hidden');
+        document.getElementById('stats-q3-relation').classList.add('hidden');
+        document.getElementById('stats-q2').classList.remove('hidden');
     }
 }
 
+function resetStats() {
+    // 💡 変更：「もう一度判定する」用の初期化処理
+    document.getElementById('stats-result').classList.add('hidden');
+    document.getElementById('stats-q3-compare').classList.add('hidden');
+    document.getElementById('stats-q3-relation').classList.add('hidden');
+    document.getElementById('stats-q2').classList.add('hidden');
+    document.getElementById('stats-q1').classList.remove('hidden');
+    statsSelections = {};
+}
+
 function showStatsResult(method) {
-    document.getElementById('stats-q2-continuous').classList.add('hidden');
+    document.getElementById('stats-q3-compare').classList.add('hidden');
+    document.getElementById('stats-q3-relation').classList.add('hidden');
     const resultBox = document.getElementById('stats-result');
     resultBox.classList.remove('hidden');
     
     let html = '';
     if (method === 'chi-square') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：カイ二乗検定</div>
-            <p>「性別によって希望する研修に差があるか」など、カテゴリー同士の比率の差を調べたい場合に最もよく使われる王道の統計手法です。</p>
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：カイ二乗検定（$\chi^2$ 検定）</div>
+            <p>「性別（男性/女性）」と「疾患の有無（あり/なし）」のように、カテゴリーデータ同士の割合・比率の差に統計的有意差があるかを調べる王道の手法です。</p>
         `;
     } else if (method === 't-test') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：t検定</div>
-            <p>「研修前後のテストの点数の比較（対応あり）」や「A病棟とB病棟の平均年齢の比較（対応なし）」など、2つのグループの平均値の差を検証します。</p>
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：t検定（対応の有無に応じて選択）</div>
+            <p>2つのグループの数値データの平均値を比較します。介入前後なら「対応のあるt検定」、独立した2病棟の比較なら「対応のないt検定」を選択します。</p>
         `;
     } else if (method === 'anova') {
         html = `
             <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：分散分析（ANOVA）</div>
-            <p>3つ以上のグループの平均値に差があるかを調べます。有意差が出た場合は、どこに差があるかを特定する「多重比較」をセットで行います。</p>
+            <p>3つ以上のグループ（例：1年目・3年目・5年目看護師）における数値データの平均値の差を検証します。有意差がある場合は、どこに差があるかを特定する「多重比較検定」を併せて行います。</p>
+        `;
+    } else if (method === 'correlation') {
+        // 💡 高度化：相関分析
+        html = `
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：相関分析（ピアソンの積率相関係数 / スピアマンの順位相関係数）</div>
+            <p>2つの数値データ（例：勤務時間と睡眠時間）に連動性があるかを調べます。データの分布（正規分布）に合わせて、ピアソンかスピアマンの手法を選択します。</p>
+        `;
+    } else if (method === 'linear-regression') {
+        // 💡 高度化：重回帰分析
+        html = `
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：重回帰分析（多変量解析）</div>
+            <p>明らかにしたい結果（目的変数）が「数値スコア」であり、そこに影響を与えている複数の要因（説明変数）を同時に分析・予測する強力な統計手法です。</p>
+        `;
+    } else if (method === 'logistic-regression') {
+        // 💡 高度化：多重ロジスティック回帰分析
+        html = `
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：多重ロジスティック回帰分析（多変量解析）</div>
+            <p>明らかにしたい結果（目的変数）が「疾患の有無」や「退職の有無」といった2値（カテゴリーデータ）である場合に、どの要因がどれくらい発症やイベントに影響しているかをオッズ比を用いて分析する多変量解析の手法です。</p>
+        `;
+    } else if (method === 'survival-analysis') {
+        // 💡 高度化：生存時間解析
+        html = `
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：生存時間解析（カプランマイヤー法 / コックス比例ハザードモデル）</div>
+            <p>「退院までの日数」や「離職までの期間」のように、特定のイベントが発生するまでの【時間（期間）】を考慮して分析する手法です。2群比較にはログランク検定、複数要因の分析にはコックス比例ハザードモデルを用います。</p>
         `;
     }
     
+    // 💡 変更：ボタン表現を「もう一度判定する」に、ブログ誘導から「EZRでの」を削除
     html += `
-        <button class="back-btn" style="margin-top:12px; display:block;" onclick="backStatsStep(1)"><i class="fa-solid fa-rotate-left"></i> 最初からやり連動する</button>
+        <button class="back-btn" style="margin-top:12px; display:block; font-weight:700; color:var(--primary-color);" onclick="resetStats()"><i class="fa-solid fa-rotate-left"></i> もう一度判定する</button>
         <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-link">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> EZRでの具体的な解析手順をブログで学ぶ
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> 具体的な解析手順をブログで学ぶ
         </a>
     `;
     resultBox.innerHTML = html;
