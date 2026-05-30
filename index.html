@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>教えてカメさん｜検索ツール</title>
-    <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <!-- PWA用ホーム画面アイコン指定 -->
     <link rel="apple-touch-icon" href="IMG_4323.png">
     <link rel="icon" type="image/png" href="IMG_4323.png">
 </head>
@@ -19,10 +17,9 @@
     <header class="app-header">
         <div class="header-container">
             <h1 class="brand-title">
-                <span class="icon-wrap">🐢</span> 教えてカメさん
+                <img src="IMG_4333.png" alt="教えてカメさん ロゴ" class="brand-logo"> 教えてカメさん
             </h1>
             <p class="brand-subtitle">看護研究の「困った！」を解決しよう</p>
-            <!-- 💡 追加：ブログ誘導ボタン -->
             <div class="header-action">
                 <a href="https://kamesan-kamesan.com/" target="_blank" class="btn-primary-outline">
                     <i class="fa-solid fa-house"></i> ブログ「教えてカメさん」はこちら
@@ -32,7 +29,6 @@
     </header>
 
     <main class="app-container">
-        <!-- タブメニュー -->
         <nav class="tab-navigation">
             <button class="tab-btn active" onclick="switchTab('search-tab')">
                 <i class="fa-solid fa-magnifying-glass"></i><span>ワード検索</span>
@@ -45,10 +41,8 @@
             </button>
         </nav>
 
-        <!-- コンテンツエリア -->
         <section class="tab-content-wrapper">
             
-            <!-- 1. ワード検索タブ -->
             <div id="search-tab" class="tab-pane active">
                 <div class="search-box-area">
                     <div class="search-input-wrap">
@@ -67,7 +61,6 @@
                 </div>
             </div>
 
-            <!-- 2. デザイン選択タブ -->
             <div id="design-tab" class="tab-pane">
                 <h3 class="pane-title">研究デザインの選択</h3>
                 <p class="pane-intro">あなたの研究目的から最適な方法の選択をサポートします。一番近いものを選択してください。</p>
@@ -84,6 +77,10 @@
                         <i class="fa-solid fa-chart-line"></i>
                         <span>2つの要素（例：夜勤回数とミス、経験年数と離職意向）の関係性を調べたい</span>
                     </button>
+                    <button class="choice-card" onclick="selectDesign('quantity-exp')">
+                        <i class="fa-solid fa-flask-vial"></i>
+                        <span>対象をランダム等で2群以上に分け、厳密に治療や介入の効果を比較・検証したい</span>
+                    </button>
                     <button class="choice-card" onclick="selectDesign('quantity-ana')">
                         <i class="fa-solid fa-code-compare"></i>
                         <span>新しいケアや研修の効果を前後で比較して証明したい</span>
@@ -96,17 +93,17 @@
                 <div id="design-result" class="result-box hidden"></div>
             </div>
 
-            <!-- 3. 統計ナビタブ -->
             <div id="stats-tab" class="tab-pane">
                 <h3 class="pane-title">統計解析方法の選択</h3>
                 <p class="pane-intro">データの種類や研究デザインに合った統計手法の選択をサポートします。扱いたいデータの性質を選んでみましょう。</p>
+                
                 <div class="question-box" id="stats-q1">
-                    <p class="question-text">Q1. 比較したいデータ（変数）の種類はどちらですか？</p>
+                    <p class="question-text">Q1. 解析したいメインのデータ（変数）の種類はどちらですか？</p>
                     <div class="choice-grid">
                         <button class="choice-card" onclick="nextStatsStep(2, 'category')">
                             <i class="fa-solid fa-tags"></i>
                             <strong>カテゴリーデータ</strong>
-                            <span>血液型、有無、はい/いいえ、職位など</span>
+                            <span>血液型、疾患の有無、はい/いいえ、職位など</span>
                         </button>
                         <button class="choice-card" onclick="nextStatsStep(2, 'continuous')">
                             <i class="fa-solid fa-arrow-up-9-1"></i>
@@ -115,22 +112,73 @@
                         </button>
                     </div>
                 </div>
-                <div class="question-box hidden" id="stats-q2-continuous">
-                    <p class="question-text">Q2. 比較する「グループ（群）」の数はいくつですか？</p>
+
+                <div class="question-box hidden" id="stats-q2">
+                    <p class="question-text">Q2. 統計解析を行う「目的」はどちらに近いですか？</p>
                     <div class="choice-grid">
-                        <button class="choice-card" onclick="showStatsResult('t-test')">
-                            <i class="fa-solid fa-user-group"></i>
-                            <strong>2つのグループを比較</strong>
-                            <span>研修の前後、A病棟とB病棟の比較など</span>
+                        <button class="choice-card" onclick="nextStatsStep(3, 'compare')">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            <strong>グループ間での「差」を比較したい</strong>
+                            <span>病棟間の違い、介入前後の効果測定など</span>
                         </button>
-                        <button class="choice-card" onclick="showStatsResult('anova')">
-                            <i class="fa-solid fa-users"></i>
-                            <strong>3つ以上のグループを比較</strong>
-                            <span>1年目・2年目・3年目の比較など</span>
+                        <button class="choice-card" onclick="nextStatsStep(3, 'relation')">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <strong>要素間の「関連性」や「要因の予測」をしたい</strong>
+                            <span>要因分析、複数のデータを用いた影響度の予測、生存率など</span>
                         </button>
                     </div>
                     <button class="back-btn" onclick="backStatsStep(1)"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
                 </div>
+
+                <div class="question-box hidden" id="stats-q3-compare">
+                    <p class="question-text">Q3. 比較する「グループ（群）」の数はいくつですか？</p>
+                    <div class="choice-grid">
+                        <button class="choice-card" onclick="showStatsResult('t-test')">
+                            <i class="fa-solid fa-user-group"></i>
+                            <strong>2つのグループを比較（数値データ）</strong>
+                            <span>研修の前後、A病棟とB病棟の平均値比較など</span>
+                        </button>
+                        <button class="choice-card" onclick="showStatsResult('anova')">
+                            <i class="fa-solid fa-users"></i>
+                            <strong>3つ以上のグループを比較（数値データ）</strong>
+                            <span>1年目・2年目・3年目の平均値比較など</span>
+                        </button>
+                        <button class="choice-card" onclick="showStatsResult('chi-square')">
+                            <i class="fa-solid fa-table"></i>
+                            <strong>グループ間の割合・比率を比較（カテゴリーデータ）</strong>
+                            <span>離職の有無(％)や疾患の有無の比率に差があるかなど</span>
+                        </button>
+                    </div>
+                    <button class="back-btn" onclick="backStatsStep(2)"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
+                </div>
+
+                <div class="question-box hidden" id="stats-q3-relation">
+                    <p class="question-text">Q3. 分析したいデータの関係性や条件はどれに当てはまりますか？</p>
+                    <div class="choice-grid">
+                        <button class="choice-card" onclick="showStatsResult('correlation')">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            <strong>2つの数値データの純粋な関係性（相関）を見たい</strong>
+                            <span>例：経験年数とインシデント回数の相関関係</span>
+                        </button>
+                        <button class="choice-card" onclick="showStatsResult('linear-regression')">
+                            <i class="fa-solid fa-calculator"></i>
+                            <strong>ある数値データ（結果）に、複数の要因がどう影響するか予測したい</strong>
+                            <span>例：燃え尽き症候群のスコア（数値）に影響する要因の特定【重回帰分析】</span>
+                        </button>
+                        <button class="choice-card" onclick="showStatsResult('logistic-regression')">
+                            <i class="fa-solid fa-toggle-on"></i>
+                            <strong>2値の結果（疾患の有無・離職の有無など）に、複数の要因がどう影響するか予測したい</strong>
+                            <span>例：退職の有無（はい/いいえ）に影響する複数因子の分析【多重ロジスティック回帰分析】</span>
+                        </button>
+                        <button class="choice-card" onclick="showStatsResult('survival-analysis')">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                            <strong>イベント（治癒、退職、再発など）が発生するまでの「時間・生存率」を分析したい</strong>
+                            <span>例：カプランマイヤー曲線、コックス比例ハザードモデルなど</span>
+                        </button>
+                    </div>
+                    <button class="back-btn" onclick="backStatsStep(2)"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
+                </div>
+
                 <div id="stats-result" class="result-box hidden"></div>
             </div>
 
