@@ -4,7 +4,6 @@ function switchTab(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     
     document.getElementById(tabId).classList.add('active');
-    // ボタンのアクティブ化
     const eventBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
     if (eventBtn) eventBtn.classList.add('active');
 }
@@ -84,7 +83,7 @@ function quickSearch(word) {
     searchWord();
 }
 
-// --- 3. 研究デザイン選択ナビ（文言調整版） ---
+// --- 3. 研究デザイン選択ナビ（💡 5つの選択肢・「最適デザイン:」への変更版） ---
 function selectDesign(type) {
     const resultBox = document.getElementById('design-result');
     resultBox.classList.remove('hidden');
@@ -92,30 +91,42 @@ function selectDesign(type) {
     let html = '';
     if (type === 'quality') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-square-poll-horizontal"></i> 選択サポート結果：質的研究（質的記述的アプローチ）</div>
-            <p>個別のケースや、数字にできない主観的なプロセスを深く掘り下げるのに向いています。あなたの研究目的を達成するために、まずはインタビューガイドの作成や倫理的配慮の検討を始めましょう。</p>
+            <div class="result-title"><i class="fa-solid fa-square-poll-horizontal"></i> 最適デザイン：質的研究（質的記述的アプローチ）</div>
+            <p>個別のケースや、数字にできない主観的なプロセスを深く掘り下げるのに向いています。インタビューガイドの作成や倫理的配慮の検討から始めましょう。</p>
         `;
     } else if (type === 'quantity-desc') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-chart-pie"></i> 選択サポート結果：量的記述研究（実態調査）</div>
-            <p>現状の傾向や、何％の人が困っているか等の分布を明確にするデザインです。目的に適合した信頼できる「尺度(アンケート用紙)」が過去にあるか検索してみましょう。</p>
+            <div class="result-title"><i class="fa-solid fa-chart-pie"></i> 最適デザイン：量的記述研究（実態調査）</div>
+            <p>現状の傾向や、何％の人が困っているか等の分布を横断的に調査して浮き彫りにするデザインです。信頼できる「既存の尺度(アンケート用紙)」が過去にあるか検索してみましょう。</p>
+        `;
+    } else if (type === 'quantity-rel') {
+        // 💡 追加デザインの結果表示
+        html = `
+            <div class="result-title"><i class="fa-solid fa-chart-line"></i> 最適デザイン：量的相関研究（相関分析・要因分析）</div>
+            <p>2つ以上の要素が「一方が上がればもう一方も変化するか（相関）」や「原因と結果（因果）の傾向にあるか」をアンケートの数値データ等から分析する、看護研究で非常にメジャーなデザインです。</p>
         `;
     } else if (type === 'quantity-ana') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-flask"></i> 選択サポート結果：準実験研究（前後比較デザインなど）</div>
-            <p>研修や新しい看護ケアの導入前後に同じアンケートや測定を行い、その「効果」を統計的に検証するアプローチです。目的を客観的な数値で証明するのに最適です。</p>
+            <div class="result-title"><i class="fa-solid fa-flask"></i> 最適デザイン：準実験研究（前後比較デザイン）</div>
+            <p>研修の実施や新しいケア手法の導入前後に、同じ評価（テストや指標）を行い、その介入効果を統計的に検証するアプローチです。</p>
+        `;
+    } else if (type === 'mixed') {
+        // 💡 追加デザインの結果表示
+        html = `
+            <div class="result-title"><i class="fa-solid fa-layer-group"></i> 最適デザイン：混合研究法（Mixed Methods）</div>
+            <p>数値による客観的な実態データ（量的データ）と、当事者の生の語り（質的データ）を組み合わせることで、研究の厚みと臨床への説得力を一気に高める先進的なアプローチです。</p>
         `;
     }
     
     html += `
         <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-link">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> このデザインのロードマップをブログで確認
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> このデザインの具体的な進め方をブログで確認
         </a>
     `;
     resultBox.innerHTML = html;
 }
 
-// --- 4. 統計ナビロジック（文言調整版） ---
+// --- 4. 統計ナビロジック ---
 let statsSelections = {};
 
 function nextStatsStep(step, val) {
@@ -147,23 +158,23 @@ function showStatsResult(method) {
     let html = '';
     if (method === 'chi-square') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-calculator"></i> 選択サポート結果：カイ二乗検定</div>
-            <p>「性別によって希望する研修に差があるか」など、カテゴリー同士の関連・比率の差を調べたい場合に最もよく使われる、デザインに適合した王道の統計手法です。</p>
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：カイ二乗検定</div>
+            <p>「性別によって希望する研修に差があるか」など、カテゴリー同士の比率の差を調べたい場合に最もよく使われる王道の統計手法です。</p>
         `;
     } else if (method === 't-test') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-calculator"></i> 選択サポート結果：t検定</div>
-            <p>「研修前後のテストの点数の比較（対応あり）」や「A病棟とB病棟の平均年齢の比較（対応なし）」など、データの種類（連続変数）と2群比較のデザインに合った統計手法です。</p>
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：t検定</div>
+            <p>「研修前後のテストの点数の比較（対応あり）」や「A病棟とB病棟の平均年齢の比較（対応なし）」など、2つのグループの平均値の差を検証します。</p>
         `;
     } else if (method === 'anova') {
         html = `
-            <div class="result-title"><i class="fa-solid fa-calculator"></i> 選択サポート結果：分散分析（ANOVA）</div>
-            <p>3つ以上のグループの平均値に差があるかを調べます。研究デザインに合わせて、有意差が出た場合はどこに差があるかを特定する「多重比較」をセットで行います。</p>
+            <div class="result-title"><i class="fa-solid fa-calculator"></i> 最適な統計手法：分散分析（ANOVA）</div>
+            <p>3つ以上のグループの平均値に差があるかを調べます。有意差が出た場合は、どこに差があるかを特定する「多重比較」をセットで行います。</p>
         `;
     }
     
     html += `
-        <button class="back-btn" style="margin-top:12px; display:block;" onclick="backStatsStep(1)"><i class="fa-solid fa-rotate-left"></i> 最初からやり直す</button>
+        <button class="back-btn" style="margin-top:12px; display:block;" onclick="backStatsStep(1)"><i class="fa-solid fa-rotate-left"></i> 最初からやり連動する</button>
         <a href="https://kamesan-kamesan.com/" target="_blank" class="blog-link">
             <i class="fa-solid fa-arrow-up-right-from-square"></i> EZRでの具体的な解析手順をブログで学ぶ
         </a>
