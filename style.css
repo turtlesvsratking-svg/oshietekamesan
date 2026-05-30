@@ -31,10 +31,10 @@ body {
     max-width: 680px;
     margin: 0 auto;
     padding: 16px;
-    min-height: calc(100vh - 180px);
+    min-height: calc(100vh - 220px);
 }
 
-/* --- ヘッダー（不自然な改行を防ぐノーラップ構造） --- */
+/* --- ヘッダー領域 --- */
 .app-header {
     background-color: #ffffff;
     border-bottom: 2px solid var(--primary-light);
@@ -57,13 +57,41 @@ body {
     font-size: 15px;
     color: var(--text-muted);
     font-weight: 500;
-    white-space: nowrap; /* モバイルでの不自然な改行を防止 */
+    white-space: nowrap;
+    margin-bottom: 14px;
+}
+
+/* 💡 追加：ブログ誘導ボタンの装飾 */
+.header-action {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.btn-primary-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 30px;
+    transition: var(--transition);
+}
+
+.btn-primary-outline:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(74, 124, 89, 0.2);
 }
 
 @media (max-width: 360px) {
-    .brand-subtitle {
-        font-size: 13px; /* 極端に画面幅が狭いスマホ用 */
-    }
+    .brand-subtitle { font-size: 13px; }
+    .btn-primary-outline { font-size: 12px; padding: 6px 14px; }
 }
 
 /* --- タブナビゲーション --- */
@@ -93,9 +121,7 @@ body {
     transition: var(--transition);
 }
 
-.tab-btn i {
-    font-size: 18px;
-}
+.tab-btn i { font-size: 18px; }
 
 .tab-btn.active {
     background-color: var(--card-bg);
@@ -112,13 +138,8 @@ body {
     border: 1px solid var(--border-color);
 }
 
-.tab-pane {
-    display: none;
-}
-
-.tab-pane.active {
-    display: block;
-}
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
 
 .pane-title {
     font-size: 18px;
