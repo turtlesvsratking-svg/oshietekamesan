@@ -53,9 +53,8 @@ body {
     gap: 10px;
 }
 
-/* 💡 追加：タイトルロゴ画像用のレスポンシブスタイル */
 .brand-logo {
-    height: 28px; /* 文字の高さにジャストフィット */
+    height: 28px;
     width: auto;
     object-fit: contain;
     vertical-align: middle;
