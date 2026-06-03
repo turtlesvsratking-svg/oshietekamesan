@@ -124,29 +124,29 @@
                         <button class="choice-card" onclick="nextStatsStep(3, 'relation')">
                             <i class="fa-solid fa-diagram-project"></i>
                             <strong>データ同士の「つながり（関係性）」や、何が原因か「影響している要因」を調べたい</strong>
-                            <span>2つのデータの関係性、結果に影響を与えている複数の原因の特定、イベントが起こるまでの期間など</span>
+                            <span>2つのデータの連動性、結果に影響を与えている複数の原因の特定、イベントが起こるまでの期間など</span>
                         </button>
                     </div>
                     <button class="back-btn" onclick="backStatsStep(1)"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
                 </div>
 
                 <div class="question-box hidden" id="stats-q3-compare">
-                    <p class="question-text">Q3. 比較する「グループ（群）」の数はいくつですか？</p>
+                    <p class="question-text">Q3. 比較する「グループ（群）」の条件はどれに当てはまりますか？</p>
                     <div class="choice-grid">
-                        <button class="choice-card" onclick="showStatsResult('t-test')">
+                        <button class="choice-card" onclick="selectCompareGroup('2-group-paired')">
                             <i class="fa-solid fa-user-group"></i>
-                            <strong>2つのグループを比較（数値データ）</strong>
-                            <span>研修の前後、A病棟とB病棟の平均値比較など</span>
+                            <strong>同じグループの前後を比較（2群の比較）</strong>
+                            <span>研修の実施前後、ケアの介入前後など</span>
                         </button>
-                        <button class="choice-card" onclick="showStatsResult('anova')">
+                        <button class="choice-card" onclick="selectCompareGroup('2-group-unpaired')">
+                            <i class="fa-solid fa-users-rectangle"></i>
+                            <strong>異なる2つのグループを比較（2群の比較）</strong>
+                            <span>A病棟とB病棟の比較、内科と外科の比較など</span>
+                        </button>
+                        <button class="choice-card" onclick="selectCompareGroup('multi-group')">
                             <i class="fa-solid fa-users"></i>
-                            <strong>3つ以上のグループを比較（数値データ）</strong>
-                            <span>1年目・2年目・3年目の平均値比較など</span>
-                        </button>
-                        <button class="choice-card" onclick="showStatsResult('chi-square')">
-                            <i class="fa-solid fa-table"></i>
-                            <strong>グループ間の割合・比率を比較（カテゴリーデータ）</strong>
-                            <span>離職の有無(％)や疾患の有無の比率に差があるかなど</span>
+                            <strong>異なる3つ以上のグループを比較</strong>
+                            <span>1年目・2年目・3年目の比較、A・B・C病棟の比較など</span>
                         </button>
                     </div>
                     <button class="back-btn" onclick="backStatsStep(2)"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
@@ -155,28 +155,45 @@
                 <div class="question-box hidden" id="stats-q3-relation">
                     <p class="question-text">Q3. 分析したいデータの関係性や条件はどれに当てはまりますか？</p>
                     <div class="choice-grid">
-                        <button class="choice-card" onclick="showStatsResult('correlation')">
+                        <button class="choice-card" onclick="selectRelationType('correlation')">
                             <i class="fa-solid fa-arrow-trend-up"></i>
                             <strong>2つの数値データの純粋な関係性（相関）を見たい</strong>
-                            <span>例：経験年数とインシデント回数の関係など</span>
+                            <span>例：経験年数とインシデント回数の相関関係</span>
                         </button>
                         <button class="choice-card" onclick="showStatsResult('linear-regression')">
                             <i class="fa-solid fa-calculator"></i>
-                            <strong>ある数値（結果）に、複数の要因がどう影響するか予測したい</strong>
-                            <span>例：燃え尽き症候群のスコア（数値）に影響する要因の特定など</span>
+                            <strong>ある数値データ（結果）に、複数の要因がどう影響するか予測したい</strong>
+                            <span>例：燃え尽き症候群のスコア（数値）に影響する要因の特定【重回帰分析】</span>
                         </button>
                         <button class="choice-card" onclick="showStatsResult('logistic-regression')">
                             <i class="fa-solid fa-toggle-on"></i>
                             <strong>2値の結果（疾患の有無・離職の有無など）に、複数の要因がどう影響するか予測したい</strong>
-                            <span>例：退職の有無（はい/いいえ）に影響する複数の要因の分析</span>
+                            <span>例：退職の有無（はい/いいえ）に影響する複数因子の分析【多重ロジスティック回帰分析】</span>
                         </button>
                         <button class="choice-card" onclick="showStatsResult('survival-analysis')">
                             <i class="fa-solid fa-hourglass-half"></i>
                             <strong>イベント（治癒、退職、再発など）が発生するまでの「時間・生存率」を分析したい</strong>
-                            <span>例：新人看護師が離職するまでの期間」や「褥瘡が治癒するまでの日数」に影響する要因の分析など</span>
+                            <span>例：「新人看護師が離職するまでの期間」や「褥瘡（床ずれ）が治癒するまでの日数」に影響する要因の分析</span>
                         </button>
                     </div>
                     <button class="back-btn" onclick="backStatsStep(2)"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
+                </div>
+
+                <div class="question-box hidden" id="stats-q4-normality">
+                    <p class="question-text">Q4. 集まったデータの「人数（サンプルサイズ）」や「分布の偏り」はどちらですか？</p>
+                    <div class="choice-grid">
+                        <button class="choice-card" onclick="setNormality('parametric')">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <strong>人数が十分に多く、極端な偏りがない（パラメトリック）</strong>
+                            <span>目安：各グループ30人以上、またはデータが平均値を中心に左右対称にバラついている</span>
+                        </button>
+                        <button class="choice-card" onclick="setNormality('non-parametric')">
+                            <i class="fa-solid fa-chart-bar"></i>
+                            <strong>人数が少ない、またはデータに極端な偏りがある（ノンパラメトリック）</strong>
+                            <span>目安：数人〜十数人しかいない、または「0点」や「満点」に近い人に偏っている</span>
+                        </button>
+                    </div>
+                    <button class="back-btn" onclick="backToQ3()"><i class="fa-solid fa-arrow-left"></i> 戻る</button>
                 </div>
 
                 <div id="stats-result" class="result-box hidden"></div>
